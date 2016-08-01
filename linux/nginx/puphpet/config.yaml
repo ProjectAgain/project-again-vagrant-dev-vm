@@ -123,18 +123,18 @@ nginx:
         names_hash_bucket_size: 128
     upstreams: {  }
     vhosts:
-        nxv_lfdp53h0sgiq:
+        nxv_www:
             server_name: project-again.nginx.dev
             server_aliases:
                 - www.project-again.nginx.dev
                 - projectagain.nginx.dev
                 - www.projectagain.nginx.dev
-            www_root: /var/www/project-again/web
+            www_root: /var/www/project-again/web/
             listen_port: '80'
             index_files:
                 - index.html
                 - index.htm
-                - index.php
+                - app_dev.php
             client_max_body_size: 1m
             ssl: '0'
             ssl_cert: ''
@@ -145,25 +145,75 @@ nginx:
             rewrite_to_https: '1'
             spdy: '1'
             locations:
-                nxvl_nzv51tvtfrkx:
+                nxvl_www1:
                     location: /
+#                    autoindex: 'on'
                     try_files:
                         - $uri
                         - $uri/
-                        - /index.php$is_args$args
+                        - /app_dev.php$is_args$args
                     fastcgi: ''
-                    fastcgi_index: ''
+                    index_files:
+                        - app_dev.php
                     fastcgi_split_path: ''
                     proxy: ''
                     proxy_redirect: ''
-                nxvl_crx1zfyjh00k:
+                nxvl_www2:
                     location: '~ \.php$'
                     try_files:
                         - $uri
                         - $uri/
-                        - /index.php$is_args$args
+                        - /app_dev.php$is_args$args
                     fastcgi: 'unix:/var/run/php5-fpm.sock'
-                    fastcgi_index: index.php
+                    fastcgi_index: app_dev.php
+                    fastcgi_split_path: '^(.+\.php)(/.*)$'
+                    fast_cgi_params_extra:
+                        - 'SCRIPT_FILENAME $request_filename'
+                        - 'APP_ENV dev'
+                    set:
+                        - '$path_info $fastcgi_path_info'
+                    proxy: ''
+                    proxy_redirect: ''
+        nxv_api:
+            server_name: api.project-again.nginx.dev
+            server_aliases:
+                - api.projectagain.nginx.dev
+            www_root: /var/www/project-again/api
+            listen_port: '80'
+            index_files:
+                - index.html
+                - index.htm
+                - api_dev.php
+            client_max_body_size: 1m
+            ssl: '0'
+            ssl_cert: ''
+            ssl_key: ''
+            ssl_port: '443'
+            ssl_protocols: ''
+            ssl_ciphers: ''
+            rewrite_to_https: '1'
+            spdy: '1'
+            locations:
+                nxvl_api1:
+                    location: /
+                    try_files:
+                        - $uri
+                        - $uri/
+                        - /api_dev.php$is_args$args
+                    fastcgi: ''
+                    index_files:
+                        - api_dev.php
+                    fastcgi_split_path: ''
+                    proxy: ''
+                    proxy_redirect: ''
+                nxvl_api2:
+                    location: '~ \.php$'
+                    try_files:
+                        - $uri
+                        - $uri/
+                        - /api_dev.php$is_args$args
+                    fastcgi: 'unix:/var/run/php5-fpm.sock'
+                    fastcgi_index: api_dev.php
                     fastcgi_split_path: '^(.+\.php)(/.*)$'
                     fast_cgi_params_extra:
                         - 'SCRIPT_FILENAME $request_filename'
@@ -188,10 +238,12 @@ apache:
         - rewrite
     vhosts:
         av_32cmxcek6xkb:
-            servername: awesome.dev
-            serveraliases:
-                - www.awesome.dev
-            docroot: /var/www/awesome
+            server_name: project-again.apache.dev
+            server_aliases:
+                - www.project-again.apache.dev
+                - projectagain.apache.dev
+                - www.projectagain.apache.dev
+            docroot: /var/www/projet-again/web
             port: '80'
             setenv:
                 - 'APP_ENV dev'
